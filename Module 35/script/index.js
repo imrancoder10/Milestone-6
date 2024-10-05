@@ -47,6 +47,16 @@ const loadCategories = () => {
 
 }
 
+// remove class 
+const removeClass = () => {
+    const buttons = document.getElementsByClassName("category-btn");
+    // console.log(buttons);
+    for (const btn of buttons) {
+        btn.classList.remove("btn-success");
+    }
+}
+
+
 // load Category Videos section by search
 
 const loadCategoryVideos = async (id) => {
@@ -55,7 +65,16 @@ const loadCategoryVideos = async (id) => {
     const res = await fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`);
     const data = await res.json();
     videosCategories(data.category);
-    console.log(data.category);
+    // console.log(data.category);
+
+    // btn color starts here...........................
+    removeClass();
+    const activeBtn = document.getElementById(`btn-${id}`);
+    // console.log(activeBtn);
+    activeBtn.classList.add('btn-success');
+    // activeBtn.classList.add("btn-success");
+
+    // btn color ends here...........................
 }
 
 
@@ -75,7 +94,7 @@ const displayCategories = (categories) => {
         const section = document.getElementById('btn-container');
         const div = document.createElement('div');
         div.innerHTML = `
-         <button class="btn" onclick="loadCategoryVideos(${item.category_id})">${item.category}</button>
+         <button id="btn-${item.category_id}" class="btn category-btn" onclick="loadCategoryVideos(${item.category_id})">${item.category}</button>
         `;
         section.append(div);
     })
@@ -96,6 +115,7 @@ const loadVideos = async () => {
 
 const videosCategories = (videos) => {
     // console.log(videos);
+
     const videosContainer = document.getElementById('videos-cotainer');
     videosContainer.innerHTML = "";
 
@@ -113,14 +133,6 @@ const videosCategories = (videos) => {
     videosContainer.classList.add('grid');
     videos.forEach(video => {
         // console.log(video.thumbnail);
-        // time setup starts here...........................................
-        const second = parseFloat(video.others.posted_date);
-        let minuteFraction = second / 60;
-        let hourFull = parseInt(minuteFraction / 60);
-        let hourFraction = parseFloat(minuteFraction / 60);
-        let minuteFull = parseInt((hourFraction - hourFull) * 60);
-        // console.log('hour', hourFull , 'minute', minuteFull);
-        // time setup ends here...........................................
         const card = document.createElement('div');
         card.innerHTML = `
         <div class="card bg-base-100 ">
