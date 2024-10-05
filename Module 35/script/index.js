@@ -12,9 +12,7 @@ const timeSetup = (seconds) => {
         const lastSecond = atLastRemainingSecond % 60;
 
         return `${months} months ${days} days ${hour} hrs ${minute} mins ${lastSecond} secs ago`;
-    } 
-
-    else if (seconds >= 86400) {
+    } else if (seconds >= 86400) {
         const day = parseInt(seconds / 86400);
         // const hour = parseInt(seconds / 3600);
         let remainingSecond = seconds % 86400;
@@ -49,16 +47,35 @@ const loadCategories = () => {
 
 }
 
+// load Category Videos section by search
+
+const loadCategoryVideos = async (id) => {
+    // alert(id);
+    // fetch the url by searching category ways videos
+    const res = await fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`);
+    const data = await res.json();
+    videosCategories(data.category);
+    console.log(data.category);
+}
+
+
 // create displayCategories
 
 const displayCategories = (categories) => {
+    const section = document.getElementById('btn-container');
     // console.log(data);
     categories.forEach(item => {
         // console.log(item);
+        // create a button
+        /*const button = document.createElement('button');
+        button.classList = "btn";
+        button.innerText = item.category;
+        section.append(button);*/
+
         const section = document.getElementById('btn-container');
         const div = document.createElement('div');
         div.innerHTML = `
-         <button class="btn">${item.category}</button>
+         <button class="btn" onclick="loadCategoryVideos(${item.category_id})">${item.category}</button>
         `;
         section.append(div);
     })
@@ -72,11 +89,28 @@ const loadVideos = async () => {
     videosCategories(data.videos);
 }
 
+
+
+
 // videosCategories
 
 const videosCategories = (videos) => {
     // console.log(videos);
     const videosContainer = document.getElementById('videos-cotainer');
+    videosContainer.innerHTML = "";
+
+    if (videos.length == 0) {
+        videosContainer.classList.remove('grid');
+        videosContainer.innerHTML = `
+       <div class="flex flex-col justify-center items-center gap-5 mt-14">
+             <img src="assets/Icon.png" alt="No Content">
+            <h2 class="font-bold text-xl"> No Content Here In This Category</h2>
+       </div>
+        `;
+        return;
+    }
+
+    videosContainer.classList.add('grid');
     videos.forEach(video => {
         // console.log(video.thumbnail);
         // time setup starts here...........................................
