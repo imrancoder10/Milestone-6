@@ -1,3 +1,17 @@
+// ?search here........................................
+
+const search = () => {
+    const searchBox = document.getElementById('search-box');
+    searchBox.addEventListener('keyup', function () {
+        searchResult = document.getElementById('search-box').value;
+        // console.log(searchResult);
+        loadVideos(searchResult);
+    });
+}
+search();
+
+
+
 // time setup section starts heres...................................
 const timeSetup = (seconds) => {
     //get hour and rest seconds
@@ -102,8 +116,9 @@ const displayCategories = (categories) => {
 }
 
 // loadVideos
-const loadVideos = async () => {
-    const res = await fetch('https://openapi.programming-hero.com/api/phero-tube/videos');
+const loadVideos = async (title) => {
+    console.log(title);
+    const res = await fetch(`https://openapi.programming-hero.com/api/phero-tube/videos${title? `?title=${title}`: ''}`);
     const data = await res.json();
     videosCategories(data.videos);
 }
