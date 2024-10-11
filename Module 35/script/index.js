@@ -1,14 +1,71 @@
 // ?search here........................................
 
-const search = () => {
-    const searchBox = document.getElementById('search-box');
-    searchBox.addEventListener('keyup', function () {
-        searchResult = document.getElementById('search-box').value;
-        // console.log(searchResult);
-        loadVideos(searchResult);
+const searchBox = document.getElementById('search-box');
+searchBox.addEventListener('keyup', function () {
+    searchResult = document.getElementById('search-box').value;
+    // console.log(searchResult);
+    loadVideos(searchResult);
+});
+
+// ?sort here...............................................
+
+function convertViewsToNumber(views) {
+    if (views.endsWith('K')) {
+        return parseFloat(views) * 1000; // Convert 'K' to thousands
+    } else if (views.endsWith('M')) {
+        return parseFloat(views) * 1000000; // Convert 'M' to millions
+    } else {
+        return parseInt(views, 10); // Convert to integer for other cases
+    }
+}
+
+const sortBtn = document.getElementById('sort-btn');
+sortBtn.addEventListener('click', () => {
+    // console.log(sortBtn);
+    const loadVideoSort = async () => {
+        try {
+            const res = await fetch('https://openapi.programming-hero.com/api/phero-tube/videos');
+            const data = await res.json();
+            const info = (data.videos);
+
+            info.sort((a, b) => {
+                const viewsA = (parseFloat(a.others.views) * 1000);
+                const viewsB = (parseFloat(b.others.views) * 1000);
+                return viewsB - viewsA;
+            });
+            videosCategories(info);
+            // console.log(info);
+
+        } catch (error) {
+            console.log('Some Errors', error);
+        }
+    }
+    loadVideoSort();
+});
+
+
+const categorySort = (id) => {
+    // console.log(id);
+    const sortBtnCategory = document.getElementById('sort-btn-category');
+    sortBtnCategory.addEventListener('click', async () => {
+        // console.log(id);
+        const res = await fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`);
+        const data = await res.json();
+        data.category.sort((a,b)=>{
+            const viewsA = parseFloat(a.others.views)*1000;
+            const viewsB = parseFloat(b.others.views)*1000;
+            return viewsB - viewsA;
+        });
+        console.log(data.category);
+       
+        videosCategories(data.category);
+
     });
 }
-search();
+
+
+
+
 
 
 
@@ -74,7 +131,7 @@ const removeClass = () => {
 // load Category Videos section by search
 
 const loadCategoryVideos = async (id) => {
-    // alert(id);
+    // alert(id); //only btn
     // fetch the url by searching category ways videos
     const res = await fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`);
     const data = await res.json();
@@ -89,6 +146,13 @@ const loadCategoryVideos = async (id) => {
     // activeBtn.classList.add("btn-success");
 
     // btn color ends here...........................
+    const sortContainer = document.getElementById('sort-container');
+    // console.log(sortContainer);
+    sortContainer.innerHTML = `
+        <button id="sort-btn-category" class="btn know">SORT</button>
+        `;
+    categorySort(id);
+
 }
 
 
@@ -111,16 +175,18 @@ const displayCategories = (categories) => {
          <button id="btn-${item.category_id}" class="btn category-btn" onclick="loadCategoryVideos(${item.category_id})">${item.category}</button>
         `;
         section.append(div);
+
     })
 
 }
 
 // loadVideos
 const loadVideos = async (title) => {
-    console.log(title);
+    // console.log(title);
     const res = await fetch(`https://openapi.programming-hero.com/api/phero-tube/videos${title? `?title=${title}`: ''}`);
     const data = await res.json();
     videosCategories(data.videos);
+    // console.log(data.videos);
 }
 
 
